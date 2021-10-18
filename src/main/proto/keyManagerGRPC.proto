@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.orangetalents";
+option java_outer_classname = "KeyManagerGRPC";
+option objc_class_prefix = "HLW";
+
+package com.orangetalents;
+
+service KeyManagerGRPCService {
+  rpc send (KeyManagerGRPCRequest) returns (KeyManagerGRPCReply) {}
+}
+
+message KeyManagerGRPCRequest {
+  string name = 1;
+}
+
+message KeyManagerGRPCReply {
+  string message = 1;
+}
