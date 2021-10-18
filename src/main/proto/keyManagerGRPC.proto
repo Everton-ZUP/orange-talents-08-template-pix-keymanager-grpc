@@ -3,18 +3,32 @@ syntax = "proto3";
 option java_multiple_files = true;
 option java_package = "com.orangetalents";
 option java_outer_classname = "KeyManagerGRPC";
-option objc_class_prefix = "HLW";
 
 package com.orangetalents;
 
 service KeyManagerGRPCService {
-  rpc send (KeyManagerGRPCRequest) returns (KeyManagerGRPCReply) {}
+  rpc cadastrar (CadastrarChavePixRequest) returns (CadastrarChavePixReply) {}
 }
 
-message KeyManagerGRPCRequest {
-  string name = 1;
+enum TipoChave{
+  DESCONHECIDA = 0;
+  CPF = 1;
+  CELULAR = 2;
+  EMAIL = 3;
+  ALEATORIA = 4;
 }
 
-message KeyManagerGRPCReply {
-  string message = 1;
+message CadastrarChavePixRequest {
+  string codigoInterno = 1;
+  TipoChave tipoChave = 2;
+  enum TipoConta{
+    DESCONHECIDA = 0;
+    CONTA_CORRENTE = 1;
+    CONTA_POUPANCA = 2;
+  }
+  TipoConta tipoConta = 3;
+}
+
+message CadastrarChavePixReply {
+  string pix_id = 1;
 }
