@@ -11,22 +11,23 @@ service KeyManagerGRPCService {
 }
 
 enum TipoChave{
-  DESCONHECIDA = 0;
+  CHAVE_DESCONHECIDA = 0;
   CPF = 1;
   CELULAR = 2;
   EMAIL = 3;
   ALEATORIA = 4;
 }
+enum TipoConta{
+  CONTA_DESCONHECIDA = 0;
+  CONTA_CORRENTE = 1;
+  CONTA_POUPANCA = 2;
+}
 
 message CadastrarChavePixRequest {
   string codigoInterno = 1;
   TipoChave tipoChave = 2;
-  enum TipoConta{
-    DESCONHECIDA = 0;
-    CONTA_CORRENTE = 1;
-    CONTA_POUPANCA = 2;
-  }
   TipoConta tipoConta = 3;
+  string valorChave = 4;
 }
 
 message CadastrarChavePixReply {
