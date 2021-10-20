@@ -46,12 +46,20 @@ dependencies {
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     runtimeOnly("mysql:mysql-connector-java")
 
+    //testes
+    testImplementation("com.h2database:h2")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.mockito:mockito-core")
+
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("io.micronaut:micronaut-http-client")
 
 }
-
+test {
+    useJUnitPlatform()
+}
 
 application {
     mainClass.set("com.orangetalents.ApplicationKt")
