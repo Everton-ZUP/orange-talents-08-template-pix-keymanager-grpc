@@ -7,6 +7,8 @@ ERPITAU:
       CONTAS:
         TODAS: ${ERPITAU_URL_CONTAS_TODAS:`http://localhost:9091/api/v1/private/contas/todas`}
         CLIENTES: ${ERPITAU_URL_CLIENTES_CONTA:`http://localhost:9091/api/v1/clientes`}
+BCB:
+  URL: ${BCB_URL:`http://localhost:8082/api/v1/pix/keys`}
 
 jpa:
   default:

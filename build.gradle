@@ -52,6 +52,9 @@ dependencies {
     testImplementation("org.testcontainers:testcontainers")
     testImplementation("org.mockito:mockito-core")
 
+    //Serializar em XML
+    implementation("io.micronaut.xml:micronaut-jackson-xml")
+
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("io.micronaut:micronaut-http-client")

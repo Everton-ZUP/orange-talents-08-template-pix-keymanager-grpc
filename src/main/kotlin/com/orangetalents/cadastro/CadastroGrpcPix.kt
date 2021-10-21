@@ -5,10 +5,8 @@ import com.orangetalents.CadastrarChavePixReply
 import com.orangetalents.CadastrarChavePixRequest
 import com.orangetalents.KeyManagerGRPCServiceGrpc
 import com.orangetalents.cadastro.dto.CadastroRequest
-import com.orangetalents.chavepix.ChavePix
 import com.orangetalents.chavepix.ChavePixRepository
 import com.orangetalents.compartilhada.tranformaErrosDeValidacaoEmStatusRuntimeException
-import com.orangetalents.erp.ErpItauCliente
 import io.grpc.Status
 import io.grpc.stub.StreamObserver
 import jakarta.inject.Singleton
@@ -17,9 +15,9 @@ import javax.validation.Validator
 
 @Singleton
 class CadastroGrpcPix(
-    val erpItauCliente: ErpItauCliente,
     val validator: Validator,
-    val chavePixRepository: ChavePixRepository
+    val chavePixRepository: ChavePixRepository,
+    val cadastroService: CadastroService
 ) : KeyManagerGRPCServiceGrpc.KeyManagerGRPCServiceImplBase() {
 
     private val LOOGER = LoggerFactory.getLogger(javaClass)
@@ -47,38 +45,38 @@ class CadastroGrpcPix(
                 return
             }
 
-            if (chavePixRepository.existsByValorChave(requestDto.valorChave)){
+            if (chavePixRepository.existsByValorChave(requestDto.valorChave)) {
                 responseObserver!!.onError(
                     Status.ALREADY_EXISTS.withDescription("Chave informada já está sendo utilizada!")
-                        .asRuntimeException())
+                        .asRuntimeException()
+                )
                 return
             }
 
             // Verificando dados com o sistema ERP do Itau
             try {
-                var resposta = erpItauCliente.consulta(requestDto.tipoConta.name, requestDto.codigoInterno).body()
 
-                var entidade = ChavePix(resposta.numero,resposta.tipo,resposta.titular.id,requestDto.tipoChave, requestDto.valorChave)
-                entidade = chavePixRepository.save(entidade)
+                var entidade = cadastroService.registraChavePix(requestDto)
 
                 responseObserver!!.onNext(
                     CadastrarChavePixReply
                         .newBuilder()
                         .setPixId(entidade.id.toString())
-                        .build())
+                        .build()
+                )
 
-                LOOGER.info("Chave criada com sucesso "+entidade.id.toString())
+                LOOGER.info("Chave criada com sucesso " + entidade.id.toString())
                 responseObserver.onCompleted()
 
             } catch (exection: Exception) {
                 responseObserver!!.onError(
-                    Status.NOT_FOUND.withDescription("Conta não encontrada no sistema Itaú").asRuntimeException())
-                LOOGER.warn("Erro na requisição ao sistema erp do banco ")
+                    Status.NOT_FOUND.withDescription("Conta não encontrada no sistema Itaú").asRuntimeException()
+                )
+                LOOGER.warn("Erro na requisição ao sistema erp do banco "+exection.message)
             }
         } catch (exception: IllegalArgumentException) {
             responseObserver!!.onError(Status.INVALID_ARGUMENT.withDescription(exception.message).asRuntimeException())
             return
         }
     }
-
 }

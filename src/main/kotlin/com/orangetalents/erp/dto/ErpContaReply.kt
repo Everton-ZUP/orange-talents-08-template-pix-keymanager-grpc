@@ -1,9 +1,9 @@
 package com.orangetalents.erp.dto
 
-import com.orangetalents.TipoConta
+import com.orangetalents.cadastro.EnumTipoConta
 
 data class ErpContaReply(
-    val tipo: TipoConta,
+    val tipo: EnumTipoConta,
     val agencia: String,
     val numero: String,
     val instituicao: ErpInstituicaoReply,

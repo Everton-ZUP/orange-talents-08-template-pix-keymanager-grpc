@@ -1,6 +1,10 @@
 package com.orangetalents.cadastro
 
-import com.orangetalents.*
+import com.orangetalents.CadastrarChavePixRequest
+import com.orangetalents.KeyManagerGRPCServiceGrpc
+import com.orangetalents.TipoChave
+import com.orangetalents.TipoConta
+import com.orangetalents.bcb.*
 import com.orangetalents.chavepix.ChavePix
 import com.orangetalents.chavepix.ChavePixRepository
 import com.orangetalents.erp.ErpItauCliente
@@ -10,7 +14,6 @@ import com.orangetalents.erp.dto.ErpTitularReply
 import io.grpc.ManagedChannel
 import io.grpc.Status
 import io.grpc.StatusRuntimeException
-import io.grpc.stub.AbstractBlockingStub
 import io.micronaut.context.annotation.Bean
 import io.micronaut.context.annotation.Factory
 import io.micronaut.grpc.annotation.GrpcChannel
@@ -19,13 +22,13 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.mockito.InjectMocks
 import org.mockito.Mockito
-import kotlin.math.E
+import java.time.LocalDateTime
 
 @MicronautTest(transactional = false)
 internal class CadastroGrpcPixTest(
@@ -35,10 +38,13 @@ internal class CadastroGrpcPixTest(
 
     @Inject
     lateinit var erpItauCliente: ErpItauCliente
-
+    @Inject
+    lateinit var bcbCliente: BcbCliente
 
     @BeforeEach
-    fun setup() = chavePixRepository.deleteAll()
+    fun setup() {
+        chavePixRepository.deleteAll()
+    }
 
     @Test
     fun `deve cadastrar uma nova chave pix corretamente`() {
@@ -56,6 +62,34 @@ internal class CadastroGrpcPixTest(
             assertEquals(buscaChaveCriada!!.id.toString(),pixId.toString())
         }
     }
+    @Test
+    fun `deve cadastrar uma nova chave aleatoria com chave do bcb`() {
+        // cenario
+        Mockito.`when`(erpItauCliente.consulta(EnumTipoConta.CONTA_CORRENTE.name, "1234"))
+            .thenReturn(criaUmRetornoDoERPValido())
+        Mockito.`when`(
+            bcbCliente.cadastrar(CadastrarChaveBcbRequest("RANDOM","1",
+            BankAccount("1111","1234","1234","CACC"),
+            Owner("NATURAL_PERSON","Test","11111111111"))))
+            .thenReturn(HttpResponse.created(ChaveBcbReply(EnumTipoChave.ALEATORIA.name,"123499", LocalDateTime.now())))
+
+
+        // ação
+        val resposta = grpcCliente.cadastrar(CadastrarChavePixRequest
+            .newBuilder()
+            .setCodigoInterno("1234")
+            .setTipoChave(TipoChave.ALEATORIA)
+            .setValorChave("")
+            .setTipoConta(TipoConta.CONTA_CORRENTE)
+            .build())
+
+        //validacao
+        val buscaChaveCriada = chavePixRepository.findByValorChave("123499")
+        resposta.run {
+            assertNotNull(pixId)
+            assertEquals(buscaChaveCriada!!.id.toString(),pixId.toString())
+        }
+    }
 
     @Test
     fun `nao deve cadastrar chave duplicada` (){
@@ -63,7 +97,7 @@ internal class CadastroGrpcPixTest(
         var chaveNoBanco = chavePixRepository.save(
             ChavePix(
                 "1234",
-                TipoConta.CONTA_CORRENTE,
+                EnumTipoConta.CONTA_CORRENTE,
                 "1234",
                 EnumTipoChave.CPF,
                 "11111111111"
@@ -123,7 +157,7 @@ internal class CadastroGrpcPixTest(
 
     private fun criaUmRetornoDoERPValido(): HttpResponse<ErpContaReply>? {
         return HttpResponse.ok(ErpContaReply(
-            TipoConta.CONTA_CORRENTE,
+            EnumTipoConta.CONTA_CORRENTE,
             "1234",
             "1234",
             ErpInstituicaoReply("Teste","1111"),
@@ -144,5 +178,8 @@ internal class CadastroGrpcPixTest(
     fun erpItauClient(): ErpItauCliente?{
         return Mockito.mock(ErpItauCliente::class.java)
     }
-
+    @MockBean(BcbCliente::class)
+    fun bcbCliente(): BcbCliente?{
+        return Mockito.mock(BcbCliente::class.java)
+    }
 }
