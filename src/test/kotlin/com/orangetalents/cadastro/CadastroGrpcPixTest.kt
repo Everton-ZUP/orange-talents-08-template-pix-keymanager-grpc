@@ -1,8 +1,8 @@
 package com.orangetalents.cadastro
 
 import com.orangetalents.*
-import com.orangetalents.cadastro.chavepix.ChavePix
-import com.orangetalents.cadastro.chavepix.ChavePixRepository
+import com.orangetalents.chavepix.ChavePix
+import com.orangetalents.chavepix.ChavePixRepository
 import com.orangetalents.erp.ErpItauCliente
 import com.orangetalents.erp.dto.ErpContaReply
 import com.orangetalents.erp.dto.ErpInstituicaoReply
@@ -60,13 +60,15 @@ internal class CadastroGrpcPixTest(
     @Test
     fun `nao deve cadastrar chave duplicada` (){
         //cenario
-        var chaveNoBanco = chavePixRepository.save(ChavePix(
+        var chaveNoBanco = chavePixRepository.save(
+            ChavePix(
             "1234",
             TipoConta.CONTA_CORRENTE,
             "1234",
             EnumTipoChave.CPF,
             "11111111111"
-        ))
+        )
+        )
 
         //açao
         try{

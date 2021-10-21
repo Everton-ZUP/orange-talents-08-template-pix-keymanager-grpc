@@ -1,4 +1,4 @@
-package com.orangetalents.cadastro.chavepix
+package com.orangetalents.chavepix
 
 import com.orangetalents.TipoConta
 import com.orangetalents.cadastro.EnumTipoChave
@@ -16,7 +16,11 @@ class ChavePix(
     @field:NotNull @field:Enumerated(EnumType.STRING) val tipoChave: EnumTipoChave,
     @field:NotBlank @field:Size(max = 77) @field:Column(unique = true) val valorChave: String
 ) {
+
     @Id
-    var id : UUID = UUID.randomUUID()
+    var id : String = UUID.randomUUID().toString()
         private set
+
+
+    fun pertenceAoTitular(titularId: String?): Boolean = titularId == idTitular
 }

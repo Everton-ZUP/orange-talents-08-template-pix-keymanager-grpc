@@ -9,7 +9,19 @@ package com.orangetalents;
 service KeyManagerGRPCService {
   rpc cadastrar (CadastrarChavePixRequest) returns (CadastrarChavePixReply) {}
 }
+service DeletarGRPCService {
+  rpc deletar (DeletarChavePixRequest) returns (DeletarChavePixReply) {}
+}
+// Messages para deletar
+message DeletarChavePixRequest {
+  string chavePixId = 1;
+  string titularId = 2;
+}
+message DeletarChavePixReply{
+  string mensagem = 1;
+}
 
+// Messages para Cadastro
 enum TipoChave{
   CHAVE_DESCONHECIDA = 0;
   CPF = 1;
@@ -22,14 +34,12 @@ enum TipoConta{
   CONTA_CORRENTE = 1;
   CONTA_POUPANCA = 2;
 }
-
 message CadastrarChavePixRequest {
   string codigoInterno = 1;
   TipoChave tipoChave = 2;
   TipoConta tipoConta = 3;
   string valorChave = 4;
 }
-
 message CadastrarChavePixReply {
   string pix_id = 1;
 }

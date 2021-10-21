@@ -1,24 +1,18 @@
 package com.orangetalents.cadastro
 
-import com.google.protobuf.Any
 import com.google.rpc.BadRequest
-import com.google.rpc.Code
 import com.orangetalents.CadastrarChavePixReply
 import com.orangetalents.CadastrarChavePixRequest
 import com.orangetalents.KeyManagerGRPCServiceGrpc
-import com.orangetalents.cadastro.chavepix.ChavePix
-import com.orangetalents.cadastro.chavepix.ChavePixRepository
 import com.orangetalents.cadastro.dto.CadastroRequest
+import com.orangetalents.chavepix.ChavePix
+import com.orangetalents.chavepix.ChavePixRepository
 import com.orangetalents.compartilhada.tranformaErrosDeValidacaoEmStatusRuntimeException
-import com.orangetalents.compartilhada.validaSeRequestENula
 import com.orangetalents.erp.ErpItauCliente
 import io.grpc.Status
-import io.grpc.StatusRuntimeException
-import io.grpc.protobuf.StatusProto
 import io.grpc.stub.StreamObserver
 import jakarta.inject.Singleton
 import org.slf4j.LoggerFactory
-import javax.validation.ConstraintViolation
 import javax.validation.Validator
 
 @Singleton
@@ -36,14 +30,19 @@ class CadastroGrpcPix(
         responseObserver: StreamObserver<CadastrarChavePixReply>?
     ) {
 
-        if (validaSeRequestENula(request, responseObserver, LOOGER)) return
-
         try {
             //Validando regras
             val requestDto = CadastroRequest(request!!)
             val contraintViolations = validator.validate(requestDto)
             if (contraintViolations.isNotEmpty()) {
-                val exception = tranformaErrosDeValidacaoEmStatusRuntimeException(contraintViolations, LOOGER)
+                val violations = contraintViolations.map {
+                    BadRequest.FieldViolation
+                        .newBuilder()
+                        .setField(it.propertyPath.last().toString())
+                        .setDescription(it.message)
+                        .build()
+                }
+                val exception = tranformaErrosDeValidacaoEmStatusRuntimeException(violations, LOOGER)
                 responseObserver!!.onError(exception)
                 return
             }
