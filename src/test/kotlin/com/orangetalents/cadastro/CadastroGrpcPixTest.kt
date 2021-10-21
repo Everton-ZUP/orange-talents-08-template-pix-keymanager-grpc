@@ -62,12 +62,12 @@ internal class CadastroGrpcPixTest(
         //cenario
         var chaveNoBanco = chavePixRepository.save(
             ChavePix(
-            "1234",
-            TipoConta.CONTA_CORRENTE,
-            "1234",
-            EnumTipoChave.CPF,
-            "11111111111"
-        )
+                "1234",
+                TipoConta.CONTA_CORRENTE,
+                "1234",
+                EnumTipoChave.CPF,
+                "11111111111"
+            )
         )
 
         //açao
