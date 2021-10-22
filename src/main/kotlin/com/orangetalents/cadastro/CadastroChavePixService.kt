@@ -19,13 +19,13 @@ open class CadastroService(val erpItauCliente: ErpItauCliente,
 
     @Transactional
     open fun registraChavePix(requestDto:CadastroRequest): ChavePix {
-        var resposta = erpItauCliente.consulta(requestDto.tipoConta.name, requestDto.codigoInterno).body()
+        var resposta = erpItauCliente.consulta(requestDto.tipoConta.name, requestDto.codigoInterno!!).body()
         var entidade = ChavePix(
             resposta.numero,
             requestDto.tipoConta,
             resposta.titular.id,
             requestDto.tipoChave,
-            requestDto.valorChave
+            requestDto.valorChave!!
         )
         entidade = chavePixRepository.save(entidade)
 

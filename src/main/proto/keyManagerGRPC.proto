@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
 option java_multiple_files = true;
 option java_package = "com.orangetalents";
 option java_outer_classname = "KeyManagerGRPC";
@@ -12,6 +13,41 @@ service KeyManagerGRPCService {
 service DeletarGRPCService {
   rpc deletar (DeletarChavePixRequest) returns (DeletarChavePixReply) {}
 }
+service ConsultarService{
+  rpc consultar (ConsultaRequest) returns (ConsultaReply) {}
+}
+// Messages para consultar
+message ConsultaRequest {
+  message ConsultaRequestInterno{
+    string clientId = 1;
+    string pixId = 2;
+  }
+
+  oneof filtro {
+    ConsultaRequestInterno pixId = 1;
+    string chave = 2;
+  }
+}
+message ConsultaReply {
+  message ChavePixRequest {
+    message ContaInfo {
+      string tipo = 1;
+      string instituicao = 2;
+      string nomeDoTitular = 3;
+      string cpfDoTitular = 4;
+      string agencia = 5;
+      string numeroDaConta = 6;
+    }
+    string tipoChave = 1;
+    string chave = 2;
+    ContaInfo conta = 3;
+    google.protobuf.Timestamp criadaEm = 4;
+  }
+  string clienteId = 1;
+  string pixId = 2;
+  ChavePixRequest chave = 3;
+}
+
 // Messages para deletar
 message DeletarChavePixRequest {
   string chavePixId = 1;

@@ -39,7 +39,9 @@ data class BankAccount(
 data class ChaveBcbReply(
     val keyType: String,
     val key: String,
-    val createdAt : LocalDateTime
+    val createdAt : LocalDateTime,
+    val bankAccount: BankAccount,
+    val owner: Owner
 )
 
 data class DeletarChaveBcbReply(

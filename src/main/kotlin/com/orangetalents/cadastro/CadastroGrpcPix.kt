@@ -45,7 +45,7 @@ class CadastroGrpcPix(
                 return
             }
 
-            if (chavePixRepository.existsByValorChave(requestDto.valorChave)) {
+            if (chavePixRepository.existsByValorChave(requestDto.valorChave!!)) {
                 responseObserver!!.onError(
                     Status.ALREADY_EXISTS.withDescription("Chave informada já está sendo utilizada!")
                         .asRuntimeException()

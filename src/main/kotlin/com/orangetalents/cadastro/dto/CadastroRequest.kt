@@ -14,10 +14,10 @@ import javax.validation.constraints.Size
 
 @Introspected
 data class CadastroRequest(
-    @field:NotBlank var codigoInterno: String,
+    @field:NotBlank var codigoInterno: String?,
     @field:NotNull var tipoConta: EnumTipoConta,
     @field:NotNull var tipoChave: EnumTipoChave,
-    @field:Size(max = 77) var valorChave: String
+    @field:Size(max = 77) var valorChave: String?
 ) {
 
     constructor(request: CadastrarChavePixRequest) :
