@@ -71,7 +71,10 @@ internal class CadastroGrpcPixTest(
             bcbCliente.cadastrar(CadastrarChaveBcbRequest("RANDOM","1",
             BankAccount("1111","1234","1234","CACC"),
             Owner("NATURAL_PERSON","Test","11111111111"))))
-            .thenReturn(HttpResponse.created(ChaveBcbReply(EnumTipoChave.ALEATORIA.name,"123499", LocalDateTime.now())))
+            .thenReturn(HttpResponse.created(
+                ChaveBcbReply(EnumTipoChave.ALEATORIA.name,"123499", LocalDateTime.now(),
+                    BankAccount("123","123","123","123"),
+                    Owner("123","123","123"))))
 
 
         // ação

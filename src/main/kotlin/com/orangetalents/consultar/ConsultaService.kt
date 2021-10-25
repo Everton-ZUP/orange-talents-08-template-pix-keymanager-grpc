@@ -35,6 +35,9 @@ class ConsultaService(
 
         var chavePixInterna = chavePixRepository.findById(pixId.pixId)
             .orElseThrow{IllegalArgumentException("Chave Pix Não encontrada!")}
+        if (chavePixInterna.idTitular != pixId.clientId){
+            throw IllegalArgumentException("Titular não condiz com o informado!")
+        }
         var respostaBcb = bcbCliente.buscar(chavePixInterna.valorChave)
         if (respostaBcb.status != HttpStatus.OK) {
             throw IllegalArgumentException("Chave não encontrada no Sistema do Banco central Brasileiro")
