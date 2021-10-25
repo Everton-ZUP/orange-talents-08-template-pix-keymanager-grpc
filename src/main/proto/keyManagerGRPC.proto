@@ -16,6 +16,24 @@ service DeletarGRPCService {
 service ConsultarService{
   rpc consultar (ConsultaRequest) returns (ConsultaReply) {}
 }
+service ConsultarTodasAsChaves{
+  rpc lista(ListaChavePixRequest) returns (ListaChavePixResponse) {}
+}
+//Messages para consultar todas as chaves pix
+message ListaChavePixRequest {
+  string clienteId = 1;
+}
+message ListaChavePixResponse{
+  message ChavesPix {
+    string pixId = 1;
+    TipoChave tipo = 2;
+    string chave = 3;
+    TipoConta comta = 4;
+    google.protobuf.Timestamp criadaEm = 5;
+  }
+  string clienteId = 1;
+  repeated ChavesPix chaves = 2;
+}
 // Messages para consultar
 message ConsultaRequest {
   message ConsultaRequestInterno{
